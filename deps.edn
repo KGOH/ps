@@ -1,6 +1,10 @@
 {:paths ["src"]
- :aliases {:test {:extra-paths ["test"]
-                  :jvm-opts    ^:replace ["-XX:-OmitStackTraceInFastThrow"]}
-           :kaocha
-           {:extra-deps {lambdaisland/kaocha {:mvn/version "1.72.1136"}}
-            :main-opts  ["-m" "kaocha.runner" "--config-file" "test/test.edn"]}}}
+
+ :aliases
+ {:test
+  {:extra-paths ["test"]
+   :jvm-opts    ^:replace ["-XX:-OmitStackTraceInFastThrow"]}
+
+  :kaocha
+  {:extra-deps {lambdaisland/kaocha {:mvn/version "1.72.1136"}}
+   :main-opts  ["-m" "kaocha.runner" "--config-file" "test/test.edn"]}}}
