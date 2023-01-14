@@ -1,0 +1,26 @@
+#kaocha/v1
+{:tests [{:id           :unit
+          :source-paths ["src"]
+          :test-paths   ["test"]
+          :ns-patterns  ["-test$"]}]
+
+ :fail-fast? false
+ :color?     true
+ :reporter   #profile {:default kaocha.report/documentation}
+
+ :plugins [:kaocha.plugin/filter
+           :kaocha.plugin/capture-output
+           :kaocha.plugin/profiling]
+
+ :kaocha.plugin.randomize/randomize? true
+ :kaocha.plugin.profiling/profiling? false
+
+ :bindings  {kaocha.stacktrace/*stacktrace-filters*
+             ["java.lang."
+              "clojure.test$"
+              "clojure.lang."
+              "clojure.core"
+              "clojure.main"
+              "orchestra."
+              "nrepl."
+              "kaocha."]}}
