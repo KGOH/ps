@@ -19,4 +19,4 @@ jobs:
       with:
        cli: 1.11.1.1155
     - name: Run tests
-      run: clojure -M:kaocha:test
+      run: clojure -M:test:run-kaocha

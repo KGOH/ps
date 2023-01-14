@@ -3,8 +3,8 @@
  :aliases
  {:test
   {:extra-paths ["test"]
+   :extra-deps  {lambdaisland/kaocha {:mvn/version "1.72.1136"}}
    :jvm-opts    ^:replace ["-XX:-OmitStackTraceInFastThrow"]}
 
-  :kaocha
-  {:extra-deps {lambdaisland/kaocha {:mvn/version "1.72.1136"}}
-   :main-opts  ["-m" "kaocha.runner" "--config-file" "test/test.edn"]}}}
+  :run-kaocha
+  {:main-opts  ["-m" "kaocha.runner" "--config-file" "test/test.edn"]}}}
