@@ -3,19 +3,16 @@
             [sc.api.logging]))
 
 
-(defmacro letsc-last
-  [& body]
-  (let [ep-id (sc.api/last-ep-id)]
-    `(sc.api/letsc ~ep-id ~@body)))
+#_"NOTE: Contains eval to delay letsc/defsc expansion since last-ep-id can change"
 
 
-(defmacro defsc-last
-  [& body]
-  (let [ep-id (sc.api/last-ep-id)]
-    `(sc.api/defsc ~ep-id ~@body)))
+(defmacro letsc-last [& body]
+  `(eval (list `sc.api/letsc (sc.api/last-ep-id) ~@body)))
 
 
-(defmacro undefsc-last
-  [& body]
-  (let [ep-id (sc.api/last-ep-id)]
-    `(sc.api/undefsc ~ep-id)))
+(defmacro defsc-last [& body]
+  `(eval (list `sc.api/defsc (sc.api/last-ep-id) ~@body)))
+
+
+(defmacro undefsc-last [& body]
+  `(eval (list `sc.api/undefsc (sc.api/last-ep-id) ~@body)))

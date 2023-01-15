@@ -5,11 +5,6 @@
 
 
 (t/deftest last-ep-id-test
-  #_"NOTE: This test contains eval magic.
-     It is needed to delay letsc/defsc expansion or variable access.
-     At lesat one ep must be defined at the expansion time.
-     First ep is defined during the test run"
-
   (defn bar [strs]
     (mapv (fn [s]
             (mapv #(do (sc.api/spy)
@@ -17,20 +12,34 @@
                   s))
           strs))
 
-  (bar ["baz" "quux"])
 
   (t/testing "letsc-last"
-    (t/is (= ["baz" "quux"] (eval (list `sut/letsc-last 'strs))))
-    (t/is (= "quux" (eval (list `sut/letsc-last 's)))))
+    (bar ["baz" "quux"])
+
+    (t/is (= ["baz" "quux"] (sut/letsc-last 'strs)))
+    (t/is (= "quux" (sut/letsc-last 's))))
+
 
   (t/testing "defsc-last"
-    (eval (list `sut/defsc-last))
+    (bar ["baz1" "quux1"])
 
-    (t/is (= ["baz" "quux"] (eval 'strs)))
-    (t/is (= "quux" (eval 's)))
+    (sut/defsc-last)
+
+    (t/is (= ["baz1" "quux1"] (eval 'strs)))
+    (t/is (= "quux1" (eval 's)))
+
+
+    (t/testing "last ep id is calculated at the call time"
+      (bar ["baz2" "quux2"])
+
+      (sut/defsc-last)
+
+      (t/is (= ["baz2" "quux2"] (eval 'strs)))
+      (t/is (= "quux2" (eval 's))))
+
 
     (t/testing "undefsc-last"
-      (eval (list `sut/undefsc-last))
+      (sut/undefsc-last)
 
       (t/is (instance? java.lang.RuntimeException
                        (try (eval 'strs)
