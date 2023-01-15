@@ -27,4 +27,15 @@
     (eval (list `sut/defsc-last))
 
     (t/is (= ["baz" "quux"] (eval 'strs)))
-    (t/is (= "quux" (eval 's)))))
+    (t/is (= "quux" (eval 's)))
+
+    (t/testing "undefsc-last"
+      (eval (list `sut/undefsc-last))
+
+      (t/is (instance? java.lang.RuntimeException
+                       (try (eval 'strs)
+                            (catch java.lang.RuntimeException e e))))
+
+      (t/is (instance? java.lang.RuntimeException
+                       (try (eval 's)
+                            (catch java.lang.RuntimeException e e)))))))

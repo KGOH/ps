@@ -13,3 +13,9 @@
   [& body]
   (let [ep-id (sc.api/last-ep-id)]
     `(sc.api/defsc ~ep-id ~@body)))
+
+
+(defmacro undefsc-last
+  [& body]
+  (let [ep-id (sc.api/last-ep-id)]
+    `(sc.api/undefsc ~ep-id)))
