@@ -1,5 +1,7 @@
 {:paths ["src"]
 
+ :deps {vvvvalvalval/scope-capture {:mvn/version "0.3.3"}}
+
  :aliases
  {:test
   {:extra-paths ["test"]
