@@ -49,7 +49,7 @@
                (neg? ep-or-cs-id) (sc.api/cs-info ep-or-cs-id))
              :else (throw (ex-info "ep-or-cs-id should be a positive integer, a negative integer, or a vector of one positive integer and one negative integer."
                             {:ep-or-cs-id ep-or-cs-id})))
-        nz (ns-name *ns*)]
+        nz (ns-name intern-ns)]
     `(do
        ~@(map
            (fn [ln]

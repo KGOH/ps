@@ -42,11 +42,11 @@
       (sut/undefsc-last)
 
       (t/is (instance? java.lang.RuntimeException
-                       (try (eval 'strs)
+                       (try (eval `strs)
                             (catch java.lang.RuntimeException e e))))
 
       (t/is (instance? java.lang.RuntimeException
-                       (try (eval 's)
+                       (try (eval `s)
                             (catch java.lang.RuntimeException e e)))))))
 
 
