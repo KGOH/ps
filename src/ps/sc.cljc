@@ -53,7 +53,9 @@
     `(do
        ~@(map
            (fn [ln]
-             `(if-let [old-v# (get @original-var-values (symbol (ns-resolve ~intern-ns (quote ~ln))))]
+             `(if-let [old-v# (some->> (ns-resolve ~intern-ns (quote ~ln))
+                                       symbol
+                                       (get @original-var-values))]
                 (do (swap! original-var-values dissoc (quote ~ln))
                     (intern ~intern-ns (quote ~ln) old-v#))
                 (ns-unmap (quote ~nz) (quote ~ln))))
@@ -66,4 +68,5 @@
 
 
 (defmacro undefsc-lastdef [& body]
-  `(eval (list `undefsc ~*ns* @last-defsc-ep-id ~@body)))
+  `(eval (when-let [ep-id# @last-defsc-ep-id]
+           (list `undefsc ~*ns* ep-id# ~@body))))

@@ -65,7 +65,7 @@
     (zipmap `[x y z] [x y z]))
 
   (t/is (= {`x 1 `y 2 `z 3} (f1 1 2)))
-  #_(sut/undefsc-lastdef)
+  (sut/undefsc-lastdef)
   (t/is (every? this-ns? (sut/defsc-last)))
   (t/is (= {`x 1 `y 2 `z 3} (f1 (eval `x) (eval `y))))
 
