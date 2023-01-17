@@ -70,3 +70,7 @@
 (defmacro undefsc-lastdef [& body]
   `(eval (when-let [ep-id# @last-defsc-ep-id]
            (list `undefsc ~*ns* ep-id# ~@body))))
+
+
+(defmacro undefsc-all [& body]
+  `(eval (list `undefsc ~*ns* (sc.api/last-ep-id) ~@body)))

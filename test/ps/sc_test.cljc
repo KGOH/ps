@@ -88,3 +88,45 @@
     (ns-unmap *ns* 'y)
     (ns-unmap *ns* 'z)
     (reset! sut/original-var-values {})))
+
+
+(t/deftest ^:kaocha/pending undefsc-all-test
+  (def this-ns (find-ns 'ps.sc-test))
+  (defn this-ns? [v] (= this-ns (:ns (meta v))))
+
+  (def z -3)
+  (def y -2)
+
+  (defn f1 [x y zz]
+    (sc.api/spy)
+    (zipmap `[x y z zz] [x y z zz]))
+
+  (defn f2 [x z]
+    (sc.api/spy)
+    (zipmap `[x z] [x z]))
+
+  (t/is (= {`x 1 `y 2 `z -3 `zz 4} (f1 1 2 4)))
+  (sut/defsc-last)
+  (t/is (= 1 (eval `x)))
+  (t/is (= 2 (eval `y)))
+  (t/is (= -3 (eval `z)))
+  (t/is (= 4 (eval `zz)))
+
+  (t/is (= {`x 5 `z 6} (f2 5 6)))
+  (sut/defsc-last)
+  (t/is (= 5 (eval `x)))
+  (t/is (= 6 (eval `z)))
+  (t/is (= 2 (eval `y)))
+  (t/is (= 4 (eval `zz)))
+
+  (sut/undefsc-all)
+
+  (t/is (= -3 (eval `z)))
+  (t/is (= -2 (eval `y)))
+
+  (t/is (instance? java.lang.RuntimeException
+                   (try (eval `zz)
+                        (catch java.lang.RuntimeException e e))))
+  (t/is (instance? java.lang.RuntimeException
+                   (try (eval `x)
+                        (catch java.lang.RuntimeException e e)))))
