@@ -14,6 +14,14 @@
 (defonce last-defsc-ep-id (atom nil))
 
 
+(defn save-last-defsc-ep-id! [ep-id]
+  (reset! last-defsc-ep-id ep-id))
+
+
+(defn get-last-defsc-ep-id! []
+  @last-defsc-ep-id)
+
+
 (defonce original-var-values (atom {}))
 
 
@@ -35,7 +43,7 @@
 
 
 (defmacro defsc-last []
-  `(eval (list `defsc ~*ns* (reset! last-defsc-ep-id (sc.api/last-ep-id)))))
+  `(eval (list `defsc ~*ns* (save-last-defsc-ep-id! (sc.api/last-ep-id)))))
 
 
 (defmacro undefsc
@@ -68,7 +76,7 @@
 
 
 (defmacro undefsc-lastdef [& body]
-  `(eval (when-let [ep-id# @last-defsc-ep-id]
+  `(eval (when-let [ep-id# (get-last-defsc-ep-id!)]
            (list `undefsc ~*ns* ep-id# ~@body))))
 
 
