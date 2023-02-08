@@ -90,7 +90,7 @@
     (reset! sut/original-var-values {})))
 
 
-(t/deftest ^:kaocha/pending undefsc-all-test
+(t/deftest undefsc-all-test
   (def this-ns (find-ns 'ps.sc-test))
   (defn this-ns? [v] (= this-ns (:ns (meta v))))
 

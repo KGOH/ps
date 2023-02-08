@@ -11,15 +11,25 @@
   `(eval (list `sc.api/letsc (sc.api/last-ep-id) ~@body)))
 
 
-(defonce last-defsc-ep-id (atom nil))
+(defonce last-defsc-ep-id (atom []))
 
 
 (defn save-last-defsc-ep-id! [ep-id]
-  (reset! last-defsc-ep-id ep-id))
+  (swap! last-defsc-ep-id conj ep-id)
+  ep-id)
 
 
-(defn get-last-defsc-ep-id! []
-  @last-defsc-ep-id)
+(defn pop-last-defsc-ep-id! []
+  (let [last-ep-id (peek @last-defsc-ep-id)]
+    (swap! last-defsc-ep-id #(or (when (seq %) (pop %))
+                                 %))
+    last-ep-id))
+
+
+(defn reset-all-defsc-ep-ids! []
+  (let [ep-ids @last-defsc-ep-id]
+    (reset! last-defsc-ep-id [])
+    ep-ids))
 
 
 (defonce original-var-values (atom {}))
@@ -76,9 +86,12 @@
 
 
 (defmacro undefsc-lastdef [& body]
-  `(eval (when-let [ep-id# (get-last-defsc-ep-id!)]
+  `(eval (when-let [ep-id# (pop-last-defsc-ep-id!)]
            (list `undefsc ~*ns* ep-id# ~@body))))
 
 
 (defmacro undefsc-all [& body]
-  `(eval (list `undefsc ~*ns* (sc.api/last-ep-id) ~@body)))
+  `(eval (when-let [ep-ids# (reset-all-defsc-ep-ids!)]
+           (cons `do
+                 (for [ep-id# ep-ids#]
+                   (list `undefsc ~*ns* ep-id# ~@body))))))
