@@ -94,39 +94,39 @@
   (def this-ns (find-ns 'ps.sc-test))
   (defn this-ns? [v] (= this-ns (:ns (meta v))))
 
-  (def z -3)
-  (def y -2)
+  (def z2 -3)
+  (def y2 -2)
 
-  (defn f1 [x y zz]
+  (defn f1 [x2 y2 zz2]
     (sc.api/spy)
-    (zipmap `[x y z zz] [x y z zz]))
+    (zipmap `[x2 y2 z2 zz2] [x2 y2 z2 zz2]))
 
-  (defn f2 [x z]
+  (defn f2 [x2 z2]
     (sc.api/spy)
-    (zipmap `[x z] [x z]))
+    (zipmap `[x2 z2] [x2 z2]))
 
-  (t/is (= {`x 1 `y 2 `z -3 `zz 4} (f1 1 2 4)))
+  (t/is (= {`x2 1 `y2 2 `z2 -3 `zz2 4} (f1 1 2 4)))
   (sut/defsc-last)
-  (t/is (= 1 (eval `x)))
-  (t/is (= 2 (eval `y)))
-  (t/is (= -3 (eval `z)))
-  (t/is (= 4 (eval `zz)))
+  (t/is (= 1 (eval `x2)))
+  (t/is (= 2 (eval `y2)))
+  (t/is (= -3 (eval `z2)))
+  (t/is (= 4 (eval `zz2)))
 
-  (t/is (= {`x 5 `z 6} (f2 5 6)))
+  (t/is (= {`x2 5 `z2 6} (f2 5 6)))
   (sut/defsc-last)
-  (t/is (= 5 (eval `x)))
-  (t/is (= 6 (eval `z)))
-  (t/is (= 2 (eval `y)))
-  (t/is (= 4 (eval `zz)))
+  (t/is (= 5 (eval `x2)))
+  (t/is (= 6 (eval `z2)))
+  (t/is (= 2 (eval `y2)))
+  (t/is (= 4 (eval `zz2)))
 
   (sut/undefsc-all)
 
-  (t/is (= -3 (eval `z)))
-  (t/is (= -2 (eval `y)))
+  (t/is (= -3 (eval `z2)))
+  (t/is (= -2 (eval `y2)))
 
   (t/is (instance? java.lang.RuntimeException
-                   (try (eval `zz)
+                   (try (eval `zz2)
                         (catch java.lang.RuntimeException e e))))
   (t/is (instance? java.lang.RuntimeException
-                   (try (eval `x)
+                   (try (eval `x2)
                         (catch java.lang.RuntimeException e e)))))
