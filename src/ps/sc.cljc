@@ -13,13 +13,12 @@
 
 
 (defmacro letsc-all [& body]
-  `(->> (sort (keys (get @db/db :execution-points)))
-        (mapv (fn [ep-id#]
-                (list `try (list `eval
-                                 (list `quote
-                                       (list `sc.api/letsc ep-id# ~@body)))
-                      (list `catch `java.lang.RuntimeException '_# ::wrong-scope))))
-        eval
+  `(->> (keys (:execution-points @db/db))
+        sort
+        (map (fn [ep-id#]
+               (try (eval `(sc.api/letsc ~ep-id# ~~@body))
+                    (catch java.lang.RuntimeException _#
+                      ::wrong-scope))))
         (remove #(= ::wrong-scope %))))
 
 
