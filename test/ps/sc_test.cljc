@@ -50,6 +50,36 @@
                             (catch java.lang.RuntimeException e e)))))))
 
 
+(t/deftest letsc-all-test
+  (sc.api/dispose-all!)
+
+  (defn collatz
+    ([x] (collatz x 0))
+    ([x i]
+     (sc.api/spy)
+     (cond
+       (= 1 x)   i
+       (even? x) (recur (quot x 2) (inc i))
+       (odd? x)  (recur (inc (* 3 x)) (inc i)))))
+
+  (t/testing "letsc-all"
+    (t/is (= [] (sut/letsc-all 'x)))
+
+    (collatz 5)
+
+    (t/is (= [5 16 8 4 2 1]
+             (sut/letsc-all 'x)))
+    (t/is (= [0 1 2 3 4 5]
+             (sut/letsc-all 'i)))
+    (t/is (= [[0 5]
+              [1 16]
+              [2 8]
+              [3 4]
+              [4 2]
+              [5 1]]
+             (sut/letsc-all '[i x])))))
+
+
 (t/deftest undefsc-restore-test
   (def this-ns (find-ns 'ps.sc-test)) #_"NOTE: can't trust *ns*"
   (defn this-ns? [v] (= this-ns (:ns (meta v))))

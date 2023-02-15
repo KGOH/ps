@@ -1,14 +1,26 @@
 (ns ps.sc
   (:require [sc.api]
             [sc.impl :as i]
+            [sc.impl.db :as db]
             [sc.api.logging]))
 
 
-#_"NOTE: Contains eval to delay letsc/defsc expansion since last-ep-id can change"
+#_"NOTE: Contains eval black magic to delay letsc/defsc expansion and symbol reading"
 
 
 (defmacro letsc-last [& body]
   `(eval (list `sc.api/letsc (sc.api/last-ep-id) ~@body)))
+
+
+(defmacro letsc-all [& body]
+  `(->> (sort (keys (get @db/db :execution-points)))
+        (mapv (fn [ep-id#]
+                (list `try (list `eval
+                                 (list `quote
+                                       (list `sc.api/letsc ep-id# ~@body)))
+                      (list `catch `java.lang.RuntimeException '_# ::wrong-scope))))
+        eval
+        (remove #(= ::wrong-scope %))))
 
 
 (defonce last-defsc-ep-id (atom []))
