@@ -5,7 +5,7 @@
             [sc.api.logging]))
 
 
-#_"NOTE: Contains eval black magic to delay letsc/defsc expansion and symbol reading"
+#_"NOTE: eval used to handle dynamic macro values & symbol resolution in RDD"
 
 
 (defmacro letsc-last [& body]
