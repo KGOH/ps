@@ -52,6 +52,7 @@
 
 (t/deftest letsc-all-test
   (sc.api/dispose-all!)
+  (sut/drop-letsc-select!)
 
   (defn collatz
     ([x] (collatz x 0))
@@ -77,7 +78,51 @@
               [3 4]
               [4 2]
               [5 1]]
-             (sut/letsc-all '[i x])))))
+             (sut/letsc-all '[i x]))))
+
+  (t/testing "select ep id"
+    (t/is (= [5 16 8 4 2 [1]]
+             (sut/letsc-select-start! 'x)))
+
+    (t/testing "can't go next after last"
+      (t/is (= [5 16 8 4 2 [1]]
+               (sut/letsc-select-next!))))
+
+    (t/is (= [5 16 8 4 [2] 1]
+             (sut/letsc-select-prev!)))
+
+    (t/testing "start on the same expr does nothing"
+      (t/is (= [5 16 8 4 [2] 1]
+               (sut/letsc-select-start! 'x))))
+
+    (t/testing "can swictch to other expr and back"
+      (t/is (= [0 1 2 3 [4] 5]
+               (sut/letsc-select-start! 'i)))
+
+      (t/is (= [5 16 8 4 [2] 1]
+               (sut/letsc-select-start! 'x))))
+
+    (t/is (= [5 16 8 [4] 2 1]
+             (sut/letsc-select-prev!)))
+
+    (t/is (= [5 16 [8] 4 2 1]
+             (sut/letsc-select-prev!)))
+
+    (t/is (= [5 [16] 8 4 2 1]
+             (sut/letsc-select-prev!)))
+
+    (t/is (= [[5] 16 8 4 2 1]
+             (sut/letsc-select-prev!)))
+
+    (t/testing "can't go prev after first"
+      (t/is (= [[5] 16 8 4 2 1]
+               (sut/letsc-select-prev!))))
+
+    (t/is (= [5 [16] 8 4 2 1]
+             (sut/letsc-select-next!)))
+
+    (t/is (= [5 16 [8] 4 2 1]
+             (sut/letsc-select-next!)))))
 
 
 (t/deftest undefsc-restore-test

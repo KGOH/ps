@@ -12,14 +12,98 @@
   `(eval `(sc.api/letsc ~(sc.api/last-ep-id) ~~@body)))
 
 
-(defmacro letsc-all [& body]
+(defmacro letsc-all-ep-ids [& body]
   `(->> (keys (:execution-points @db/db))
         sort
-        (map (fn [ep-id#]
-               (try (eval `(sc.api/letsc ~ep-id# ~~@body))
-                    (catch java.lang.RuntimeException _#
-                      ::wrong-scope))))
+        (mapv (fn [ep-id#]
+                (try [ep-id# (eval `(sc.api/letsc ~ep-id# ~~@body))]
+                     (catch java.lang.RuntimeException _#
+                       ::wrong-scope))))
         (remove #(= ::wrong-scope %))))
+
+
+(defmacro letsc-all [& body]
+  `(map second (letsc-all-ep-ids ~@body)))
+
+
+(defonce letsc-select-state
+  (atom {}))
+
+
+(defn drop-letsc-select! []
+  (reset! letsc-select-state {}))
+
+
+(defn init-letsc-select! [ep-ids body]
+  (reset! letsc-select-state
+          {:ep-ids ep-ids
+           :body body
+           :selected-ep-id (first (last ep-ids))}))
+
+
+(defn switch-letsc-body! [ep-ids body]
+  (swap! letsc-select-state assoc
+         :ep-ids ep-ids
+         :body body))
+
+
+(defn save-letsc-select! [selected-ep-id]
+  (swap! letsc-select-state assoc :selected-ep-id selected-ep-id))
+
+
+(defn mark-selected-ep-id-value [{:keys [selected-ep-id ep-ids]}]
+  (map (fn [[i v]] (cond-> v (= selected-ep-id i) list))
+       ep-ids))
+
+
+(defn letsc-select-start!*
+  ([ep-ids body]
+   (letsc-select-start!* @letsc-select-state ep-ids body))
+
+  ([select-state ep-ids body]
+   (let [{:as state
+          saved-body     :body
+          selected-ep-id :selected-ep-id}
+         select-state]
+     (mark-selected-ep-id-value
+       (cond
+         (= saved-body body)
+         state
+
+         (contains? (into #{} (map first) ep-ids)
+                    selected-ep-id)
+         (switch-letsc-body! ep-ids body)
+
+         :else
+         (init-letsc-select! ep-ids body))))))
+
+
+(defmacro letsc-select-start! [& body]
+  `(letsc-select-start!* (letsc-all-ep-ids ~@body)
+                         (list ~@body)))
+
+
+(defn letsc-select-next!
+  ([] (letsc-select-next! @letsc-select-state))
+
+  ([select-state]
+   (let [{ep-ids         :ep-ids
+          selected-ep-id :selected-ep-id}
+         select-state]
+     (mark-selected-ep-id-value
+       (save-letsc-select!
+         (or (some (fn [[[ep-id _v] [next-ep-id _next-v]]]
+                     (when (= selected-ep-id ep-id)
+                       next-ep-id))
+                   (map vector ep-ids (rest ep-ids)))
+             selected-ep-id))))))
+
+
+(defn letsc-select-prev!
+  ([] (letsc-select-prev! @letsc-select-state))
+
+  ([select-state]
+   (letsc-select-next! (update select-state :ep-ids reverse))))
 
 
 (defonce last-defsc-ep-id (atom []))
