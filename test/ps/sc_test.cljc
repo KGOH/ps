@@ -4,6 +4,12 @@
             [sc.api]))
 
 
+(defmacro undefined-sym? [quoted-sym]
+  `(instance? java.lang.RuntimeException
+              (try (eval ~quoted-sym)
+                   (catch java.lang.RuntimeException e# e#))))
+
+
 (t/deftest last-ep-id-test
   (defn bar [strs]
     (mapv (fn [s]
@@ -41,13 +47,9 @@
     (t/testing "undefsc-last"
       (sut/undefsc-last)
 
-      (t/is (instance? java.lang.RuntimeException
-                       (try (eval `strs)
-                            (catch java.lang.RuntimeException e e))))
+      (t/is (undefined-sym? `strs))
 
-      (t/is (instance? java.lang.RuntimeException
-                       (try (eval `s)
-                            (catch java.lang.RuntimeException e e)))))))
+      (t/is (undefined-sym? `s)))))
 
 
 (t/deftest letsc-all-test
@@ -132,12 +134,8 @@
 
       (sut/undefsc-lastdef)
 
-      (t/is (instance? java.lang.RuntimeException
-                       (try (eval `x)
-                            (catch java.lang.RuntimeException e e))))
-      (t/is (instance? java.lang.RuntimeException
-                       (try (eval `i)
-                            (catch java.lang.RuntimeException e e)))))))
+      (t/is (undefined-sym? `x))
+      (t/is (undefined-sym? `i)))))
 
 
 (t/deftest undefsc-restore-test
@@ -214,9 +212,5 @@
   (t/is (= -3 (eval `z2)))
   (t/is (= -2 (eval `y2)))
 
-  (t/is (instance? java.lang.RuntimeException
-                   (try (eval `zz2)
-                        (catch java.lang.RuntimeException e e))))
-  (t/is (instance? java.lang.RuntimeException
-                   (try (eval `x2)
-                        (catch java.lang.RuntimeException e e)))))
+  (t/is (undefined-sym? `zz2))
+  (t/is (undefined-sym? `x2)))
