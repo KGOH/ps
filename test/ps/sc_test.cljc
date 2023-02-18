@@ -126,6 +126,10 @@
     (t/is (= [5 16 [8] 4 2 1]
              (sut/letsc-select-next!)))
 
+    (t/testing "letsc selected"
+      (t/is (= 8 (sut/letsc-selected 'x)))
+      (t/is (= 2 (sut/letsc-selected 'i))))
+
     (t/testing "defsc selected"
       (sut/defsc-selected)
 

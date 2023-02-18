@@ -83,6 +83,10 @@
                          (list ~@body)))
 
 
+(defmacro letsc-selected [& body]
+  `(eval `(sc.api/letsc ~(:selected-ep-id @letsc-select-state) ~~@body)))
+
+
 (defn letsc-select-next!
   ([] (letsc-select-next! @letsc-select-state))
 
