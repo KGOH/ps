@@ -151,6 +151,10 @@
   `(eval `(defsc ~~*ns* ~(save-last-defsc-ep-id! (sc.api/last-ep-id)))))
 
 
+(defmacro defsc-selected []
+  `(eval `(defsc ~~*ns* ~(save-last-defsc-ep-id! (:selected-ep-id @letsc-select-state)))))
+
+
 (defmacro undefsc
   "sc.api/undefsc modified to restore original values"
   [intern-ns ep-or-cs-id]

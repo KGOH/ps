@@ -122,7 +122,22 @@
              (sut/letsc-select-next!)))
 
     (t/is (= [5 16 [8] 4 2 1]
-             (sut/letsc-select-next!)))))
+             (sut/letsc-select-next!)))
+
+    (t/testing "defsc selected"
+      (sut/defsc-selected)
+
+      (t/is (= 8 (eval `x)))
+      (t/is (= 2 (eval `i)))
+
+      (sut/undefsc-lastdef)
+
+      (t/is (instance? java.lang.RuntimeException
+                       (try (eval `x)
+                            (catch java.lang.RuntimeException e e))))
+      (t/is (instance? java.lang.RuntimeException
+                       (try (eval `i)
+                            (catch java.lang.RuntimeException e e)))))))
 
 
 (t/deftest undefsc-restore-test
