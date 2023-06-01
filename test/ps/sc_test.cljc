@@ -126,6 +126,9 @@
     (t/is (= [5 16 [8] 4 2 1]
              (sut/letsc-select-nth! 2)))
 
+    (t/is (= [5 16 [8] 4 2 1]
+             (sut/letsc-select-current!)))
+
     (t/is (= [[5] 16 8 4 2 1]
              (sut/letsc-select-nth! -10)))
 

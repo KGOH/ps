@@ -130,6 +130,13 @@
    (letsc-select-specific! (first (last (:ep-ids select-state))))))
 
 
+(defn letsc-select-current!
+  ([] (letsc-select-current! @letsc-select-state))
+
+  ([select-state]
+   (letsc-select-specific! (:selected-ep-id select-state))))
+
+
 (defn letsc-select-nth!
   ([i] (letsc-select-nth! @letsc-select-state i))
 
