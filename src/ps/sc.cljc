@@ -87,20 +87,26 @@
   `(eval `(sc.api/letsc ~(:selected-ep-id @letsc-select-state) ~~@body)))
 
 
+(defn letsc-select-specific! [selected-ep-id]
+  (mark-selected-ep-id-value (save-letsc-select! selected-ep-id)))
+
+
 (defn letsc-select-next!
   ([] (letsc-select-next! @letsc-select-state))
 
   ([select-state]
    (let [{ep-ids         :ep-ids
           selected-ep-id :selected-ep-id}
-         select-state]
-     (mark-selected-ep-id-value
-       (save-letsc-select!
+         select-state
+
+         next-ep-id
          (or (some (fn [[[ep-id _v] [next-ep-id _next-v]]]
                      (when (= selected-ep-id ep-id)
                        next-ep-id))
                    (map vector ep-ids (rest ep-ids)))
-             selected-ep-id))))))
+             selected-ep-id)]
+
+     (letsc-select-specific! next-ep-id))))
 
 
 (defn letsc-select-prev!
@@ -108,6 +114,20 @@
 
   ([select-state]
    (letsc-select-next! (update select-state :ep-ids reverse))))
+
+
+(defn letsc-select-first!
+  ([] (letsc-select-first! @letsc-select-state))
+
+  ([select-state]
+   (letsc-select-specific! (first (first (:ep-ids select-state))))))
+
+
+(defn letsc-select-last!
+  ([] (letsc-select-last! @letsc-select-state))
+
+  ([select-state]
+   (letsc-select-specific! (first (last (:ep-ids select-state))))))
 
 
 (defonce last-defsc-ep-id (atom []))

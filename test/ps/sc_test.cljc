@@ -120,6 +120,12 @@
       (t/is (= [[5] 16 8 4 2 1]
                (sut/letsc-select-prev!))))
 
+    (t/is (= [5 16 8 4 2 [1]]
+             (sut/letsc-select-last!)))
+
+    (t/is (= [[5] 16 8 4 2 1]
+             (sut/letsc-select-first!)))
+
     (t/is (= [5 [16] 8 4 2 1]
              (sut/letsc-select-next!)))
 
