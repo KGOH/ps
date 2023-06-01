@@ -130,6 +130,15 @@
    (letsc-select-specific! (first (last (:ep-ids select-state))))))
 
 
+(defn letsc-select-nth!
+  ([i] (letsc-select-nth! @letsc-select-state i))
+
+  ([select-state i]
+   (let [ep-ids (:ep-ids select-state)
+         bounded-i (min (max 0 i) (dec (count ep-ids)))]
+     (letsc-select-specific! (first (nth ep-ids bounded-i))))))
+
+
 (defonce last-defsc-ep-id (atom []))
 
 

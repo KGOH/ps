@@ -123,6 +123,15 @@
     (t/is (= [5 16 8 4 2 [1]]
              (sut/letsc-select-last!)))
 
+    (t/is (= [5 16 [8] 4 2 1]
+             (sut/letsc-select-nth! 2)))
+
+    (t/is (= [[5] 16 8 4 2 1]
+             (sut/letsc-select-nth! -10)))
+
+    (t/is (= [5 16 8 4 2 [1]]
+             (sut/letsc-select-nth! 100)))
+
     (t/is (= [[5] 16 8 4 2 1]
              (sut/letsc-select-first!)))
 
