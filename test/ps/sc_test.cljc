@@ -172,7 +172,12 @@
       (sut/undefsc-lastdef)
 
       (t/is (undefined-sym? `x))
-      (t/is (undefined-sym? `i)))))
+      (t/is (undefined-sym? `i)))
+    
+    (t/testing "starting on the same expr updates the list"
+      (collatz 2)
+      (t/is (= [5 16 [8] 4 2 1 2 1]
+              (sut/letsc-select-start! 'x))))))
 
 
 (t/deftest undefsc-restore-test

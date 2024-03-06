@@ -61,14 +61,13 @@
    (letsc-select-start!* @letsc-select-state ep-ids body))
 
   ([select-state ep-ids body]
-   (let [{:as state
-          saved-body     :body
+   (let [{saved-body     :body
           selected-ep-id :selected-ep-id}
          select-state]
      (mark-selected-ep-id-value
        (cond
          (= saved-body body)
-         state
+         (swap! letsc-select-state assoc :ep-ids ep-ids)
 
          (contains? (into #{} (map first) ep-ids)
                     selected-ep-id)
@@ -88,8 +87,7 @@
    (letsc-select-start-no-mark!* @letsc-select-state ep-ids body))
 
   ([select-state ep-ids body]
-   (let [{:as state
-          saved-body     :body
+   (let [{saved-body     :body
           selected-ep-id :selected-ep-id}
          select-state
          
@@ -97,7 +95,7 @@
          (->>
            (cond
              (= saved-body body)
-             state
+             (swap! letsc-select-state assoc :ep-ids ep-ids)
       
              (contains? (into #{} (map first) ep-ids)
                         selected-ep-id)
@@ -106,7 +104,7 @@
              :else
              (init-letsc-select! ep-ids body)))
          
-         selected-idx (some (fn [[idx[id v]]] (when (= selected-ep-id id) idx)) (map-indexed vector ep-ids))]
+         selected-idx (some (fn [[idx [id _]]] (when (= selected-ep-id id) idx)) (map-indexed vector ep-ids))]
      [selected-idx (map second ep-ids)])))
 
 
