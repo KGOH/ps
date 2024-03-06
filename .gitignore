@@ -7,6 +7,7 @@ pom.xml.asc
 *.jar
 *.class
 /.nrepl-port
+/.repl-port
 .hgignore
 .hg/
 .cpcache
