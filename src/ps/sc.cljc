@@ -119,6 +119,10 @@
   `(eval `(sc.api/letsc ~(:selected-ep-id @letsc-select-state) ~~@body)))
 
 
+(defmacro letsc! [& body]
+  `(eval `(sc.api/letsc ~(or (:selected-ep-id @letsc-select-state) (sc.api/last-ep-id)) ~~@body)))
+
+
 (defn letsc-select-specific! [selected-ep-id]
   (mark-selected-ep-id-value (save-letsc-select! selected-ep-id)))
 
@@ -225,6 +229,10 @@
 
 (defmacro defsc-selected []
   `(eval `(defsc ~~*ns* ~(save-last-defsc-ep-id! (:selected-ep-id @letsc-select-state)))))
+
+
+(defmacro defsc! []
+  `(eval `(defsc ~~*ns* ~(save-last-defsc-ep-id! (or (:selected-ep-id @letsc-select-state) (sc.api/last-ep-id))))))
 
 
 (defmacro undefsc
