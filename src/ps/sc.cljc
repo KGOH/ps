@@ -83,6 +83,38 @@
                          (list ~@body)))
 
 
+(defn letsc-select-start-no-mark!*
+  ([ep-ids body]
+   (letsc-select-start-no-mark!* @letsc-select-state ep-ids body))
+
+  ([select-state ep-ids body]
+   (let [{:as state
+          saved-body     :body
+          selected-ep-id :selected-ep-id}
+         select-state
+         
+         {:keys [ep-ids selected-ep-id]}
+         (->>
+           (cond
+             (= saved-body body)
+             state
+      
+             (contains? (into #{} (map first) ep-ids)
+                        selected-ep-id)
+             (switch-letsc-body! ep-ids body)
+      
+             :else
+             (init-letsc-select! ep-ids body)))
+         
+         selected-idx (some (fn [[idx[id v]]] (when (= selected-ep-id id) idx)) (map-indexed vector ep-ids))]
+     [selected-idx (map second ep-ids)])))
+
+
+(defmacro letsc-select-start-no-mark! [& body]
+  `(letsc-select-start-no-mark!* (letsc-all-ep-ids ~@body)
+                                 (list ~@body)))
+
+
 (defmacro letsc-selected [& body]
   `(eval `(sc.api/letsc ~(:selected-ep-id @letsc-select-state) ~~@body)))
 
